@@ -39,7 +39,7 @@ jobs:
                 "https://api.github.com/repos/${{ env.ORG_NAME }}/$REPO_NAME/collaborators/$USERNAME"
             done < <(tail -n +2 users.csv)
             
-          elif [ $ACTION = "remove-user" ]; then
+          elif [ $ACTION == "remove-user" ]; then
             while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
               if [ -z "$ROLE" ]; then
                 ROLE="write"

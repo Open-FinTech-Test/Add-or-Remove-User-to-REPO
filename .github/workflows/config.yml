@@ -1,1 +1,48 @@
 
+name: Assign Users Roles Repo
+
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       repo-name:
+#         description: 'Repository Name'
+#         required: true
+
+on:
+  push:
+    branches: [ main ]
+    
+env:
+  REPO_NAME: "${{ github.event.inputs.repo-name }}"
+  ORG_NAME: "${{ secrets.ORGANIZATION }}"
+  ACTION: "action"
+  
+jobs:
+  assign-users:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Assign users to repository
+        run: |
+          read -r ACTION REPO_NAME < <(head -n 1 user_roles_csv/user_roles.csv)
+          echo "Action: $ACTION"
+          echo "Repo name: $REPO_NAME"
+          while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
+            if [ -z "$ROLE" ]; then
+              ROLE="write"
+            fi
+            curl -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -X PUT \
+              -d '{"permission":"'$ROLE'"}' \
+              "https://api.github.com/repos/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/collaborators/$USERNAME"
+          done < <(tail -n +2 user_roles_csv/user_roles.csv)
+        
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: user-roles-csv
+          path: user_roles_csv/user_roles.csv

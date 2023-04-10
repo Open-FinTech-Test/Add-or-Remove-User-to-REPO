@@ -29,6 +29,8 @@ jobs:
               if [ -z "$ROLE" ]; then
                 ROLE="write"
               fi
+              echo "Username: $USERNAME"
+              echo "Role: $ROLE"
               curl -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
                 -X PUT \

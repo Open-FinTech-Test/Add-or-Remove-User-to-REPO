@@ -27,7 +27,7 @@ jobs:
 
       - name: Assign users to repository
         run: |
-          read -r ACTION REPO_NAME < <(head -n 1 user_roles_csv/user_roles.csv)
+          read -r ACTION REPO_NAME < <(head -n 1 users.csv)
           echo "Action: $ACTION"
           echo "Repo name: $REPO_NAME"
           while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do

@@ -31,16 +31,17 @@ jobs:
           echo "Action: $ACTION"
           echo "Repo name: $REPO_NAME"
           
-          while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
-            if [ -z "$ROLE" ]; then
-              ROLE="write"
-            fi
-            curl -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              -X PUT \
-              -d '{"permission":"'$ROLE'"}' \
-              "https://api.github.com/repos/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/collaborators/$USERNAME"
-          done < <(tail -n +2 users.csv)
+          if [[ $ACTION == "add-user" ]]; then
+            while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
+              if [ -z "$ROLE" ]; then
+                ROLE="write"
+              fi
+              curl -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                -X PUT \
+                -d '{"permission":"'$ROLE'"}' \
+                "https://api.github.com/repos/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/collaborators/$USERNAME"
+            done < <(tail -n +2 users.csv)
           
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v2
@@ -48,7 +49,6 @@ jobs:
           name: user-roles-csv
           path: users.csv
             
-#          if [ $ACTION = "add-user" ]; then
 #          elif [ $ACTION = "remove-user" ]; then
 #            while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
 #              if [ -z "$ROLE" ]; then

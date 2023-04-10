@@ -31,12 +31,12 @@ jobs:
               fi
               echo "Username: $USERNAME"
               echo "Role: $ROLE"
-              echo "https://api.github.com/repos/$ORG_NAME/$REPO_NAME/collaborators/$USERNAME"
+              echo "https://api.github.com/repos/${{ env.ORG_NAME }}/$REPO_NAME/collaborators/$USERNAME"
               curl -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
                 -X PUT \
                 -d '{"permission":"'$ROLE'"}' \
-                "https://api.github.com/repos/Open-FinTech-Test/$REPO_NAME/collaborators/$USERNAME"
+                "https://api.github.com/repos/${{ env.ORG_NAME }}/$REPO_NAME/collaborators/$USERNAME"
             done < <(tail -n +2 users.csv)
           fi
       - name: Upload CSV artifact

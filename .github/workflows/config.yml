@@ -39,10 +39,10 @@ jobs:
               -X PUT \
               -d '{"permission":"'$ROLE'"}' \
               "https://api.github.com/repos/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/collaborators/$USERNAME"
-          done < <(tail -n +2 user_roles_csv/user_roles.csv)
+          done < <(tail -n +2 users.csv)
         
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v2
         with:
           name: user-roles-csv
-          path: user_roles_csv/user_roles.csv
+          path: users.csv

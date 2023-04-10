@@ -31,7 +31,7 @@ jobs:
           echo "Action: $ACTION"
           echo "Repo name: $REPO_NAME"
           
-          if [[ $ACTION == "add-user" ]]; then
+          if [ $ACTION == "add-user" ]; then
             while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
               if [ -z "$ROLE" ]; then
                 ROLE="write"
@@ -42,7 +42,7 @@ jobs:
                 -d '{"permission":"'$ROLE'"}' \
                 "https://api.github.com/repos/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/collaborators/$USERNAME"
             done < <(tail -n +2 users.csv)
-          
+          fi
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v2
         with:

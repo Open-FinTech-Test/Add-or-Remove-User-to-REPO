@@ -1,5 +1,5 @@
 
-name: Auto
+name: User to Repo
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Assign users to repository
+      - name: Assign or remove users to REPO
         run: |
           IFS=',' read -r ACTION REPO_NAME < <(head -n 1 users.csv)
           echo "Action: $ACTION"
@@ -41,9 +41,6 @@ jobs:
             
           elif [ $ACTION == "remove-user" ]; then
            while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
-              if [ -z "$ROLE" ]; then
-                ROLE="write"
-              fi
               curl -i -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" -X DELETE "https://api.github.com/repos/${{ env.ORG_NAME }}/$REPO_NAME/collaborators/$USERNAME"
             done < <(tail -n +2 users.csv)  
             
@@ -54,16 +51,6 @@ jobs:
         with:
           name: user-roles-csv
           path: users.csv
-            
-#          elif [ $ACTION = "remove-user" ]; then
-#            while IFS=',' read -r USERNAME ROLE || [ -n "$USERNAME" ]; do
-#              if [ -z "$ROLE" ]; then
-#                ROLE="write"
-#              fi
-#              curl -i -H "Authorization: token ${{ secrets.ORG_ADMIN_TOKEN }}" -X DELETE https://api.github.com/repos/${{ env.ORG_NAME }}/${{ env.REPO_NAME }}/collaborators/$USERNAME"
-#            done < <(tail -n +2 users.csv)
-          
-#          fi
           
         
 
